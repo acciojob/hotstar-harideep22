@@ -24,7 +24,6 @@ public class ProductionHouseController {
 
         //Default ratings of the ProductionHouse should be 0
         return productionHouseService.addProductionHouseToDb(productionHouseEntryDto);
-
     }
 
 }

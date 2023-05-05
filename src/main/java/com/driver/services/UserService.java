@@ -10,6 +10,7 @@ import com.driver.repository.WebSeriesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,16 +26,26 @@ public class UserService {
     public Integer addUser(User user){
 
         //Jut simply add the user to the Db and return the userId returned by the repository
-        return null;
+        User user1=userRepository.save(user);
+        return user1.getId();
     }
 
     public Integer getAvailableCountOfWebSeriesViewable(Integer userId){
 
         //Return the count of all webSeries that a user can watch based on his ageLimit and subscriptionType
         //Hint: Take out all the Webseries from the WebRepository
+        List<WebSeries> webSeriesList=webSeriesRepository.findAll();
+        User user=userRepository.findById(userId).get();
+        Integer cnt=0;
+
+        for (WebSeries webSeries:webSeriesList){
+            if(webSeries.getAgeLimit()<=user.getAge() && webSeries.getSubscriptionType()==user.getSubscription().getSubscriptionType()){
+                cnt++;
+            }
+        }
 
 
-        return null;
+        return cnt;
     }
 
 
