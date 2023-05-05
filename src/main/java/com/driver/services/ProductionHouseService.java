@@ -23,7 +23,7 @@ public class ProductionHouseService {
 
         productionHouseRepository.save(productionHouse);
 
-        return productionHouse.getId();
+        return 0;
     }
 
 
