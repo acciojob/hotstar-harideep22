@@ -15,15 +15,17 @@ public class ProductionHouseService {
     @Autowired
     ProductionHouseRepository productionHouseRepository;
 
+
     public Integer addProductionHouseToDb(ProductionHouseEntryDto productionHouseEntryDto){
-        ProductionHouse productionHouse=new ProductionHouse();
-        productionHouse.setName(productionHouseEntryDto.getName());
-        productionHouse.setWebSeriesList(new ArrayList<>());
-        productionHouse.setRatings(0);
 
-        ProductionHouse productionHouse1=productionHouseRepository.save(productionHouse);
+        ProductionHouse productionHouse = new ProductionHouse(productionHouseEntryDto.getName());
 
-        return productionHouse1.getId();
+        productionHouse.setRatings(0.0);
+
+        ProductionHouse addedProductionHouse = productionHouseRepository.save(productionHouse);
+
+
+        return addedProductionHouse.getId();
     }
 
 

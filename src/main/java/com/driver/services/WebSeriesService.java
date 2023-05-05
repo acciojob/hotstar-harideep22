@@ -8,8 +8,6 @@ import com.driver.repository.WebSeriesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class WebSeriesService {
 
@@ -26,35 +24,39 @@ public class WebSeriesService {
         //use function written in Repository Layer for the same
         //Dont forget to save the production and webseries Repo
 
-        ProductionHouse productionHouse=productionHouseRepository.findById(webSeriesEntryDto.getProductionHouseId()).get();
-        List<WebSeries> webSeriesList=productionHouse.getWebSeriesList();
-        double webSeriesTotalRating=0;
-        int cnt=webSeriesList.size();
-        for (WebSeries webSeries:webSeriesList){
-            webSeriesTotalRating+=webSeries.getRating();
-        }
+        String seriesName = webSeriesEntryDto.getSeriesName();
 
-        if(webSeriesRepository.findBySeriesName(webSeriesEntryDto.getSeriesName())!=null){
+        if(webSeriesRepository.findBySeriesName(seriesName) != null)
             throw new Exception("Series is already present");
-        }
 
-        WebSeries webSeries=new WebSeries();
-
-
-        webSeries.setSeriesName(webSeriesEntryDto.getSeriesName());
+        WebSeries webSeries = new WebSeries();
+        webSeries.setSeriesName(seriesName);
         webSeries.setAgeLimit(webSeriesEntryDto.getAgeLimit());
         webSeries.setRating(webSeriesEntryDto.getRating());
         webSeries.setSubscriptionType(webSeriesEntryDto.getSubscriptionType());
+
+        ProductionHouse productionHouse = productionHouseRepository.findById(webSeriesEntryDto.getProductionHouseId()).get();
+
         webSeries.setProductionHouse(productionHouse);
+
         productionHouse.getWebSeriesList().add(webSeries);
 
-        webSeriesTotalRating+=webSeries.getRating();
-        double averageRating=webSeriesTotalRating/(cnt+1);
-        productionHouse.setRatings(averageRating);
+        //Update the rating of production house
+        //Formula:
+        //averagenew = averageold + (valuenew−averageold)/newsize
 
-        WebSeries webSeries1=webSeriesRepository.save(webSeries);
+        double oldRating = productionHouse.getRatings();
+        double newSeriesRating = webSeries.getRating();
+        int newSize = productionHouse.getWebSeriesList().size();
 
-        return webSeries1.getId();
+        double updatedRating = oldRating + (newSeriesRating-oldRating)/newSize;
+
+        productionHouse.setRatings(updatedRating);
+
+        productionHouseRepository.save(productionHouse);
+        WebSeries updatedWebSeries = webSeriesRepository.save(webSeries);
+
+        return updatedWebSeries.getId();
     }
 
 }

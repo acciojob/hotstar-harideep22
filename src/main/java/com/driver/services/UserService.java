@@ -10,7 +10,6 @@ import com.driver.repository.WebSeriesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,26 +25,45 @@ public class UserService {
     public Integer addUser(User user){
 
         //Jut simply add the user to the Db and return the userId returned by the repository
-        User user1=userRepository.save(user);
-        return user1.getId();
+        User newUser = userRepository.save(user);
+
+        return newUser.getId();
     }
 
     public Integer getAvailableCountOfWebSeriesViewable(Integer userId){
 
         //Return the count of all webSeries that a user can watch based on his ageLimit and subscriptionType
         //Hint: Take out all the Webseries from the WebRepository
-        List<WebSeries> webSeriesList=webSeriesRepository.findAll();
-        User user=userRepository.findById(userId).get();
-        Integer cnt=0;
 
-        for (WebSeries webSeries:webSeriesList){
-            if(webSeries.getAgeLimit()<=user.getAge() && webSeries.getSubscriptionType()==user.getSubscription().getSubscriptionType()){
-                cnt++;
+        User user = userRepository.findById(userId).get();
+
+        Subscription subscription = user.getSubscription();
+
+        SubscriptionType subscriptionType = subscription.getSubscriptionType();
+
+        List<WebSeries> webSeriesList = webSeriesRepository.findAll();
+
+        int count=0;
+
+        if(subscriptionType.toString().equals("BASIC")){
+            for(WebSeries web : webSeriesList){
+                if(web.getSubscriptionType().toString().equals("BASIC"))
+                    count++;
+            }
+        }
+        else if (subscriptionType.toString().equals("PRO")) {
+            for(WebSeries web : webSeriesList){
+                if(web.getSubscriptionType().toString().equals("PRO") || web.getSubscriptionType().toString().equals("BASIC") )
+                    count++;
+            }
+        }
+        else {
+            for(WebSeries web : webSeriesList){
+                count++;
             }
         }
 
-
-        return cnt;
+        return count;
     }
 
 
