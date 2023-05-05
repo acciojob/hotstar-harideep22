@@ -40,18 +40,18 @@ public class SubscriptionService {
         SubscriptionType type=subscriptionEntryDto.getSubscriptionType();
         Integer finalAmount=0;
         if(type==SubscriptionType.BASIC){
-            finalAmount=500;
+            finalAmount=500+200*subscription.getNoOfScreensSubscribed();
         } else if (type==SubscriptionType.PRO) {
-            finalAmount=800;
+            finalAmount=800+250*subscription.getNoOfScreensSubscribed();
         }
         else {
-            finalAmount=1000;
+            finalAmount=1000+350*subscription.getNoOfScreensSubscribed();
         }
         subscription.setTotalAmountPaid(finalAmount);
         user.setSubscription(subscription);
-        userRepository.save(user);
+        User user1=userRepository.save(user);
 
-        return finalAmount;
+        return user1.getSubscription().getTotalAmountPaid();
     }
 
     public Integer upgradeSubscription(Integer userId)throws Exception{
@@ -68,17 +68,19 @@ public class SubscriptionService {
 
         if(type==SubscriptionType.BASIC){
             subscription.setSubscriptionType(SubscriptionType.PRO);
-            subscription.setTotalAmountPaid(800);
-            differeceAmount=subscription.getTotalAmountPaid()-500;
+            subscription.setTotalAmountPaid(800+250*subscription.getNoOfScreensSubscribed());
+            differeceAmount=subscription.getTotalAmountPaid()-(500+(200*subscription.getNoOfScreensSubscribed()));
         }
         else if(type==SubscriptionType.PRO){
             subscription.setSubscriptionType(SubscriptionType.ELITE);
-            subscription.setTotalAmountPaid(1000);
-            differeceAmount=subscription.getTotalAmountPaid()-800;
+            subscription.setTotalAmountPaid(1000+350*subscription.getNoOfScreensSubscribed());
+            differeceAmount=subscription.getTotalAmountPaid()-(800+(250*subscription.getNoOfScreensSubscribed()));
         }
         else {
             throw new Exception("Already the best Subscription");
         }
+        user.setSubscription(subscription);
+        User user1=userRepository.save(user);
 
         return differeceAmount;
     }
