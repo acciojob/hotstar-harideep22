@@ -17,13 +17,13 @@ public class WebseriesController {
     WebSeriesService webSeriesService;
 
     @PostMapping("/add")
-    public int addWebSeries(WebSeriesEntryDto webSeriesEntryDto){
+    public int addWebSeries(WebSeriesEntryDto webSeriesEntryDto) throws Exception {
 
         try{
             return webSeriesService.addWebSeries(webSeriesEntryDto);
 
         }catch (Exception e){
-            return -1;
+            throw new Exception("Series is already present");
         }
     }
 
